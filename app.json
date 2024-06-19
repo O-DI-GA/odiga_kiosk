@@ -3,7 +3,7 @@
     "name": "Odiga_Kiosk",
     "slug": "Odiga_Kiosk",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscope",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
