@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Payment from "./screens/Payment";
+import QRcode from "./screens/QRcode";
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Payment" component={Payment} />
+        <Stack.Screen name="QRcode" component={QRcode} />
       </Stack.Navigator>
     </NavigationContainer>
   );
