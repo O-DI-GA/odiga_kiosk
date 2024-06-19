@@ -1,7 +1,13 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const Payment = () => {
+  const navigation = useNavigation();
+  const handlePress = () => {
+    const qrValue = `order_${Date.now()}`; // 결제 버튼을 누른 시간으로 QR 생성
+    navigation.navigate("QRcode", { qrValue });
+  };
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -39,7 +45,10 @@ const Payment = () => {
         </View>
         <View style={styles.payContainer}>
           <Text style={styles.payText}>결제 방법</Text>
-          <TouchableOpacity style={[styles.payButton, styles.odigaPay]}>
+          <TouchableOpacity
+            style={[styles.payButton, styles.odigaPay]}
+            onPress={handlePress}
+          >
             <Text style={[styles.payButtonText, styles.bold]}>ODIGA</Text>
             <Text style={styles.payButtonText}>앱으로 결제</Text>
           </TouchableOpacity>
