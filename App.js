@@ -2,14 +2,25 @@ import * as React from "react";
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import * as Linking from "expo-linking";
+
 import Payment from "./screens/Payment";
 import QRcode from "./screens/QRcode";
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  const linking = {
+    prefixes: [Linking.createURL("/"), "odiga://"],
+    config: {
+      screens: {
+        Payment: "payment",
+      },
+    },
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator
         initialRouteName="Payment"
         screenOptions={{
