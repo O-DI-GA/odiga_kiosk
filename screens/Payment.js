@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import { getRequest } from "../utils/api";
@@ -47,6 +47,9 @@ const Payment = () => {
     navigation.navigate("QRcode", { qrValue });
   };
 
+  const handleOffline = () => {
+    Alert.alert("알림", "카운터로 가세요");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -92,7 +95,9 @@ const Payment = () => {
             <Text style={styles.payButtonText}>앱으로 결제</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.payButton}>
-            <Text style={styles.payButtonText}>현장 결제</Text>
+            <Text style={styles.payButtonText} onPress={handleOffline}>
+              현장 결제
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
