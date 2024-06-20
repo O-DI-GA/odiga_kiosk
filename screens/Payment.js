@@ -1,13 +1,31 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 
 const Payment = () => {
   const navigation = useNavigation();
+
   const handlePress = () => {
-    const qrValue = `order_${Date.now()}`; // 결제 버튼을 누른 시간으로 QR 생성
+    // 주문 내역 예시
+    const orderDetails = {
+      orderId: Date.now(),
+      items: [
+        { name: "햄버거", quantity: 10, price: 60000 },
+        { name: "감자튀김", quantity: 10, price: 30000 },
+      ],
+      total: 130000,
+    };
+
+    // JSON을 URL로 인코딩
+    const qrValue = Linking.createURL("payment", {
+      queryParams: { order: JSON.stringify(orderDetails) },
+    });
+
+    // QR 코드 화면으로 이동
     navigation.navigate("QRcode", { qrValue });
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
