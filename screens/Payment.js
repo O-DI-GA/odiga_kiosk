@@ -1,23 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
+import { getRequest } from "../utils/api";
 
 const Payment = () => {
   const navigation = useNavigation();
+  const [data, setData] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const handlePress = () => {
-    // 주문 내역 예시
-    const orderDetails = {
-      orderId: Date.now(),
-      items: [
-        { name: "햄버거", quantity: 10, price: 60000 },
-        { name: "감자튀김", quantity: 10, price: 30000 },
-      ],
-      total: 130000,
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getRequest("api/v1/table/1/order/1");
+        console.log("응답: ", response.data);
+        if (response && response.data) {
+          setData(response.data.tableOrderMenuListDtoList);
+          setTotalPrice(response.data.totalOrderPrice);
+        } else {
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    // JSON을 URL로 인코딩
+    fetchData();
+  }, []);
+
+  const handlePress = () => {
+    const orderDetails = {
+      items: data,
+      total: totalPrice,
+    };
+    console.log(orderDetails);
+
+    // // JSON을 URL로 인코딩
     const qrValue = Linking.createURL("payment", {
       queryParams: { order: JSON.stringify(orderDetails) },
     });
@@ -39,26 +60,26 @@ const Payment = () => {
               </Text>
               <Text style={[styles.menuText, styles.menuItemPrice]}>가격</Text>
             </View>
-            <View style={styles.menuItem}>
-              <Text style={[styles.menuText, styles.menuItemName]}>햄버거</Text>
-              <Text style={[styles.menuText, styles.menuItemQuantity]}>10</Text>
-              <Text style={[styles.menuText, styles.menuItemPrice]}>
-                60,000
-              </Text>
-            </View>
-            <View style={styles.menuItem}>
-              <Text style={[styles.menuText, styles.menuItemName]}>
-                감자튀김
-              </Text>
-              <Text style={[styles.menuText, styles.menuItemQuantity]}>10</Text>
-              <Text style={[styles.menuText, styles.menuItemPrice]}>
-                30,000
-              </Text>
-            </View>
+
+            {data.map((item, index) => (
+              <View key={index} style={styles.menuItem}>
+                <Text style={[styles.menuText, styles.menuItemName]}>
+                  {item.menuName}
+                </Text>
+                <Text style={[styles.menuText, styles.menuItemQuantity]}>
+                  {item.menuCount}
+                </Text>
+                <Text style={[styles.menuText, styles.menuItemPrice]}>
+                  {item.menuTotalPrice.toLocaleString()}
+                </Text>
+              </View>
+            ))}
           </View>
           <View style={styles.total}>
             <Text style={styles.totalText}>합계</Text>
-            <Text style={styles.totalText}>130,000원</Text>
+            <Text style={styles.totalText}>
+              {totalPrice.toLocaleString()}원
+            </Text>
           </View>
         </View>
         <View style={styles.payContainer}>
@@ -138,7 +159,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     left: 50,
-    gap: 240,
+    gap: 270,
     borderTopWidth: 2,
     borderStyle: "dashed",
     borderColor: "gray",
