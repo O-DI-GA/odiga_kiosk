@@ -20,7 +20,7 @@ const QRcode = () => {
       </TouchableOpacity>
       <Text style={styles.title}>QR 코드</Text>
       <View style={styles.qr}>
-        <QRCode value={qrValue} size={200} />
+        <QRCode value={JSON.stringify(qrValue)} size={200} />
       </View>
     </View>
   );

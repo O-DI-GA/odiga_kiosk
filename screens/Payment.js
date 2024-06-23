@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as Linking from "expo-linking";
 import { getRequest } from "../utils/api";
 
 const Payment = () => {
@@ -14,7 +13,8 @@ const Payment = () => {
     const fetchData = async () => {
       try {
         const response = await getRequest("api/v1/table/1/order/1");
-        console.log("응답: ", response.data);
+        console.log("응답: ", response);
+        console.log("응답.데이터: ", response.data);
         if (response && response.data) {
           setData(response.data.tableOrderMenuListDtoList);
           setTotalPrice(response.data.totalOrderPrice);
@@ -38,10 +38,8 @@ const Payment = () => {
     };
     console.log(orderDetails);
 
-    // // JSON을 URL로 인코딩
-    const qrValue = Linking.createURL("payment", {
-      queryParams: { order: JSON.stringify(orderDetails) },
-    });
+    // 주문 내역을 QR로 넘겨줌
+    const qrValue = { order: orderDetails };
 
     // QR 코드 화면으로 이동
     navigation.navigate("QRcode", { qrValue });
@@ -130,6 +128,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   menuContainer: {
+    flex: 1,
     borderTopWidth: 2,
     borderStyle: "dashed",
     borderColor: "gray",
@@ -160,11 +159,10 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   total: {
+    marginHorizontal: 5,
+    padding: 12,
+    justifyContent: "space-between",
     flexDirection: "row",
-    position: "absolute",
-    bottom: 20,
-    left: 50,
-    gap: 270,
     borderTopWidth: 2,
     borderStyle: "dashed",
     borderColor: "gray",
