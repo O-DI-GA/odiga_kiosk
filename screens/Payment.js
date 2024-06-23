@@ -5,6 +5,8 @@ import { getRequest } from "../utils/api";
 
 const Payment = () => {
   const navigation = useNavigation();
+  const [storeId, setStoreId] = useState(1);
+  const [orderId, setOrderId] = useState(0);
   const [data, setData] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -16,6 +18,7 @@ const Payment = () => {
         console.log("응답: ", response);
         console.log("응답.데이터: ", response.data);
         if (response && response.data) {
+          setOrderId(response.data.tableOrderHistoryId);
           setData(response.data.tableOrderMenuListDtoList);
           setTotalPrice(response.data.totalOrderPrice);
         } else {
@@ -33,8 +36,8 @@ const Payment = () => {
 
   const handlePress = () => {
     const orderDetails = {
-      items: data,
-      total: totalPrice,
+      storeId: storeId,
+      orderId: orderId,
     };
     console.log(orderDetails);
 
