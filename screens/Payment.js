@@ -7,6 +7,7 @@ const Payment = () => {
   const navigation = useNavigation();
   const [storeId, setStoreId] = useState(1);
   const [orderId, setOrderId] = useState(0);
+  const [storeName, setStoreName] = useState("닭동가리");
   const [data, setData] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,7 @@ const Payment = () => {
     const orderDetails = {
       storeId: storeId,
       orderId: orderId,
+      storeName: storeName,
     };
     console.log(orderDetails);
 
@@ -49,7 +51,7 @@ const Payment = () => {
   };
 
   const handleOffline = () => {
-    Alert.alert("알림", "카운터로 가세요");
+    Alert.alert("알림", "카운터에서 결제해주세요.");
   };
   return (
     <View style={styles.container}>
