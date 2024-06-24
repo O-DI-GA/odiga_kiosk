@@ -97,10 +97,8 @@ const Payment = () => {
             <Text style={[styles.payButtonText, styles.bold]}>ODIGA</Text>
             <Text style={styles.payButtonText}>앱으로 결제</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.payButton}>
-            <Text style={styles.payButtonText} onPress={handleOffline}>
-              현장 결제
-            </Text>
+          <TouchableOpacity style={styles.payButton} onPress={handleOffline}>
+            <Text style={styles.payButtonText}>현장 결제</Text>
           </TouchableOpacity>
         </View>
       </View>
