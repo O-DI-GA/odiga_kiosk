@@ -6,6 +6,7 @@ import * as Linking from "expo-linking";
 
 import Payment from "./screens/Payment";
 import QRcode from "./screens/QRcode";
+import Main from "./screens/Main";
 
 const Stack = createStackNavigator();
 
@@ -22,11 +23,12 @@ export default function App() {
   return (
     <NavigationContainer linking={linking}>
       <Stack.Navigator
-        initialRouteName="Payment"
+        initialRouteName="Main"
         screenOptions={{
           headerShown: false, // 모든 화면의 헤더 숨기기
         }}
       >
+        <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen name="QRcode" component={QRcode} />
       </Stack.Navigator>
