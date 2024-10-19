@@ -1,9 +1,10 @@
 import * as React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as Linking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 import Payment from "./screens/Payment";
 import QRcode from "./screens/QRcode";
@@ -21,6 +22,15 @@ export default function App() {
       },
     },
   };
+
+  React.useEffect(() => {
+    if (Platform.OS === "android") {
+      const hideNavigationBar = async () => {
+        await NavigationBar.setVisibilityAsync("hidden");
+      };
+      hideNavigationBar();
+    }
+  }, []);
 
   return (
     <>
