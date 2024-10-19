@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Menu from "../components/Menu";
 
-const Main = () => {
+const Main = ({ navigation }) => {
   const [menuData] = useState([
     {
       categoryName: "메인",
@@ -133,11 +133,15 @@ const Main = () => {
   return (
     <View style={styles.container}>
       <View style={styles.sideBar}>
-        <View style={styles.tableNum}>
-          <View style={styles.tableNumDark}></View>
-          <Text style={{ fontSize: 20 }}>테이블 번호</Text>
-          <Text style={{ fontSize: 40, fontWeight: "bold" }}>6</Text>
-        </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TableNumSetting")}
+        >
+          <View style={styles.tableNum}>
+            <View style={styles.tableNumDark}></View>
+            <Text style={{ fontSize: 20 }}>테이블 번호</Text>
+            <Text style={{ fontSize: 40, fontWeight: "bold" }}>6</Text>
+          </View>
+        </TouchableOpacity>
         <ScrollView
           style={{ flex: 1, marginTop: 160 }}
           contentContainerStyle={styles.categoryContainer}
