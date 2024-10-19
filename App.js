@@ -8,6 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import Payment from "./screens/Payment";
 import QRcode from "./screens/QRcode";
 import Main from "./screens/Main";
+import TableNumSetting from "./screens/TableNumSetting";
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,7 @@ export default function App() {
           }}
         >
           <Stack.Screen name="Main" component={Main} />
+          <Stack.Screen name="TableNumSetting" component={TableNumSetting} />
           <Stack.Screen name="Payment" component={Payment} />
           <Stack.Screen name="QRcode" component={QRcode} />
         </Stack.Navigator>
