@@ -1,11 +1,15 @@
 import * as React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as Linking from "expo-linking";
+import { StatusBar } from "expo-status-bar";
+import * as NavigationBar from "expo-navigation-bar";
 
 import Payment from "./screens/Payment";
 import QRcode from "./screens/QRcode";
+import Main from "./screens/Main";
+import TableNumSetting from "./screens/TableNumSetting";
 
 const Stack = createStackNavigator();
 
@@ -19,18 +23,32 @@ export default function App() {
     },
   };
 
+  React.useEffect(() => {
+    if (Platform.OS === "android") {
+      const hideNavigationBar = async () => {
+        await NavigationBar.setVisibilityAsync("hidden");
+      };
+      hideNavigationBar();
+    }
+  }, []);
+
   return (
-    <NavigationContainer linking={linking}>
-      <Stack.Navigator
-        initialRouteName="Payment"
-        screenOptions={{
-          headerShown: false, // 모든 화면의 헤더 숨기기
-        }}
-      >
-        <Stack.Screen name="Payment" component={Payment} />
-        <Stack.Screen name="QRcode" component={QRcode} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <StatusBar hidden={true} />
+      <NavigationContainer linking={linking}>
+        <Stack.Navigator
+          initialRouteName="Main"
+          screenOptions={{
+            headerShown: false, // 모든 화면의 헤더 숨기기
+          }}
+        >
+          <Stack.Screen name="Main" component={Main} />
+          <Stack.Screen name="TableNumSetting" component={TableNumSetting} />
+          <Stack.Screen name="Payment" component={Payment} />
+          <Stack.Screen name="QRcode" component={QRcode} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
 
