@@ -34,7 +34,7 @@ const Cart = () => {
       <ScrollView style={styles.cartScrollView}>
         <View style={styles.cartContainer}>
           {items.length === 0 ? (
-            <Text style={styles.emptyText}>카트에 아이템이 없습니다.</Text>
+            <Text style={styles.emptyText}>담긴 메뉴가 없습니다.</Text>
           ) : (
             items.map((item) => (
               <View key={item.menuId} style={styles.cartItem}>
@@ -91,12 +91,14 @@ const styles = StyleSheet.create({
     marginBottom: 20, // 가격 표시 부분을 위해 여백
   },
   cartContainer: {
+    justifyContent : 'center',
     padding: 10,
   },
   emptyText: {
     fontSize: 18,
     textAlign: "center",
     color: "#424242",
+    marginTop : '100%'
   },
   cartItem: {
     flexDirection: "row",
