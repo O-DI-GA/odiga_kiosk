@@ -5,6 +5,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as Linking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
+import { Provider } from "react-redux";
+import store from "./store/store";
 
 import Payment from "./screens/Payment";
 import QRcode from "./screens/QRcode";
@@ -34,20 +36,22 @@ export default function App() {
 
   return (
     <>
-      <StatusBar hidden={true} />
-      <NavigationContainer linking={linking}>
-        <Stack.Navigator
-          initialRouteName="Main"
-          screenOptions={{
-            headerShown: false, // 모든 화면의 헤더 숨기기
-          }}
-        >
-          <Stack.Screen name="Main" component={Main} />
-          <Stack.Screen name="TableNumSetting" component={TableNumSetting} />
-          <Stack.Screen name="Payment" component={Payment} />
-          <Stack.Screen name="QRcode" component={QRcode} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Provider store={store}>
+        <StatusBar hidden={true} />
+        <NavigationContainer linking={linking}>
+          <Stack.Navigator
+            initialRouteName="Main"
+            screenOptions={{
+              headerShown: false, // 모든 화면의 헤더 숨기기
+            }}
+          >
+            <Stack.Screen name="Main" component={Main} />
+            <Stack.Screen name="TableNumSetting" component={TableNumSetting} />
+            <Stack.Screen name="Payment" component={Payment} />
+            <Stack.Screen name="QRcode" component={QRcode} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
     </>
   );
 }

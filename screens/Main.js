@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Menu from "../components/Menu";
+import Cart from "../components/Cart";
 
 const Main = ({ navigation }) => {
   const [menuData] = useState([
@@ -96,21 +97,21 @@ const Main = ({ navigation }) => {
       categoryName: "사이드",
       menuList: [
         {
-          menuId: 2,
+          menuId: 12,
           menuName: "라면",
           menuImageUrl:
             "https://img4.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202403/20/moneytoday/20240320064406240lqcj.jpg",
           menuPrice: 444,
         },
         {
-          menuId: 4,
+          menuId: 13,
           menuName: "콘치즈",
           menuImageUrl:
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRffXfl570V76LKihgKo_HlckmVxE9ErVJBnQ&s",
           menuPrice: 555,
         },
         {
-          menuId: 6,
+          menuId: 14,
           menuName: "파인애플 샤베트",
           menuImageUrl:
             "https://img.bizthenaum.co.kr/img2022/pineappesharbet_06.jpg",
@@ -174,6 +175,10 @@ const Main = ({ navigation }) => {
         <Menu items={selectedMenuList} />
       </View>
 
+      <View style={styles.cartContainer}>
+        <Cart/>
+      </View>
+
       <View style={styles.bottomBar}>
         <View style={styles.row}>
           <TouchableOpacity style={styles.staff}>
@@ -192,6 +197,8 @@ const Main = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+
+
     </View>
   );
 };
@@ -255,10 +262,12 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   menuContainer: {
-    flex: 1,
+    flex: 4,
     flexWrap: "wrap",
   },
-
+  cartContainer : {
+    flex : 1.5,
+  },
   bottomBar: {
     position: "absolute",
     bottom: 0,
