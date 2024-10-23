@@ -71,8 +71,8 @@ const Cart = () => {
       {/* 가격 합계 표시 */}
       <View style={styles.totalContainer}>
         <View style={styles.totalBox}>
-            <Text style={styles.totalText}>Total</Text>
-            <Text style={styles.totalPriceText}>{totalPrice} 원</Text>
+          <Text style={styles.totalText}>Total</Text>
+          <Text style={styles.totalPriceText}>{totalPrice} 원</Text>
         </View>
       </View>
     </View>
@@ -84,25 +84,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
-    backgroundColor: "#f0f0f0",
-      paddingBottom : 110,
+    backgroundColor: "#424242",
+    paddingBottom: 110,
   },
   cartScrollView: {
     marginBottom: 20, // 가격 표시 부분을 위해 여백
   },
   cartContainer: {
-    justifyContent : 'center',
+    justifyContent: "center",
     padding: 10,
   },
   emptyText: {
     fontSize: 18,
     textAlign: "center",
-    color: "#424242",
-    marginTop : '100%'
+    color: "#fff",
+    marginTop: "100%",
   },
   cartItem: {
     flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: "#202020",
     marginBottom: 10,
     borderRadius: 10,
     padding: 10,
@@ -119,16 +119,17 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: "bold",
-      marginBottom : 20
+    marginBottom: 20,
+    color: "#fff",
   },
-    quantityBox : {
-      flexDirection : "row",
-        alignItems : "center",
-        gap : 40
-    },
+  quantityBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 40,
+  },
   itemPrice: {
     fontSize: 16,
-      color : "#FE554A"
+    color: "#fff",
   },
   quantityControls: {
     flexDirection: "row",
@@ -139,41 +140,43 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FB8132",
-      width : 20,
+    backgroundColor: "#ffbf00",
+    width: 20,
     borderRadius: 100,
     marginHorizontal: 10,
   },
   quantityText: {
     fontSize: 16,
-    color: "#fff",
+    color: "#000",
   },
   itemQuantity: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#fff",
   },
   totalContainer: {
-    paddingHorizontal : 10
+    paddingHorizontal: 10,
   },
   totalBox: {
-      flexDirection : "row",
-      justifyContent : "space-between",
-      alignItems : "center",
-      marginBottom : 20,
-    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: "#202020",
     paddingVertical: 10,
-      paddingHorizontal : 30,
+    paddingHorizontal: 30,
     borderWidth: 2,
     borderColor: "#F5A62E",
-      borderRadius: 10,
+    borderRadius: 10,
   },
   totalText: {
     fontSize: 20,
-      color : "#585858"
+    color: "#fff",
   },
-    totalPriceText : {
-      fontSize : 20,
-    }
+  totalPriceText: {
+    fontSize: 20,
+    color: "#fff",
+  },
 });
 
 export default Cart;
