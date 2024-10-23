@@ -1,20 +1,36 @@
 import React from "react";
-import { ScrollView, View, Text, Image, StyleSheet } from "react-native";
+import {ScrollView, View, Text, Image, StyleSheet, Pressable} from "react-native";
+import {useDispatch} from "react-redux";
+import {addItemToCart} from "../store/cartSlice";
 
 const Menu = ({ items }) => {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = (item) => {
+    const menuItem = {
+      menuId: item.menuId,
+      menuImageUrl: item.menuImageUrl,
+      menuName: item.menuName,
+      menuPrice: item.menuPrice,
+      quantity: 1,
+    };
+    // 리덕스 스토어에 메뉴 저장
+    dispatch(addItemToCart(menuItem));
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.menuList}>
       {items.length === 0 ? (
         <Text style={styles.noMenuText}>메뉴가 없습니다</Text>
       ) : (
         items.map((item) => (
-          <View key={item.menuId} style={styles.menuItem}>
+          <Pressable key={item.menuId} style={styles.menuItem} onPress={() => handleAddToCart(item)}>
             <Image source={{ uri: item.menuImageUrl }} style={styles.image} />
             <View style={styles.menuInfo}>
               <Text style={styles.menuName}>{item.menuName}</Text>
               <Text style={styles.menuPrice}>{item.menuPrice}원</Text>
             </View>
-          </View>
+          </Pressable>
         ))
       )}
     </ScrollView>
@@ -25,7 +41,7 @@ const styles = StyleSheet.create({
   menuList: {
     paddingTop: 40,
     paddingBottom: 120,
-    paddingHorizontal: 100,
+    paddingHorizontal: 50,
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 20,
