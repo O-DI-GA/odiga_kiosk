@@ -26,7 +26,7 @@ function Login() {
     const handleLogin = async () => {
         const response = await loginAPI(loginData, setIsLogged);
         if(response === "success") {
-            navigation.navigate("Main");
+            navigation.navigate("ShopList");
         }
         if(response === "fail"){
             Alert.alert("로그인 실패", "아이디 또는 비밀번호를 다시 확인하세요.");
