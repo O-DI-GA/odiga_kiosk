@@ -14,6 +14,7 @@ import Payment from "./screens/Payment";
 import QRcode from "./screens/QRcode";
 import Main from "./screens/Main";
 import TableNumSetting from "./screens/TableNumSetting";
+import ShopList from "./screens/ShopList";
 
 const Stack = createStackNavigator();
 
@@ -49,6 +50,7 @@ export default function App() {
               }}
             >
               <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="ShopList" component={ShopList}/>
               <Stack.Screen name="Main" component={Main} />
               <Stack.Screen name="TableNumSetting" component={TableNumSetting} />
               <Stack.Screen name="Payment" component={Payment} />
