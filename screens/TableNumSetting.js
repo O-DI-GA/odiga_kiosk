@@ -15,7 +15,7 @@ const TableNumSetting = () => {
   // 테이블 개수 불러오기
   const fetchTableCount = async() => {
     try{
-      const response = await getTokenRequest(`/store/${storeId}`);
+      const response = await getTokenRequest(`/owner/store/${storeId}`);
       console.log("테이블 개수 API 결과 : ", response.data.tableCount)
       setTableCount(response.data.tableCount)
     }
