@@ -5,18 +5,30 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Modal, Alert,
 } from "react-native";
+
 import Menu from "../components/Menu";
 import Cart from "../components/Cart";
+import { CallEmployee } from "../components/CallEmployee";
+
 import { getStoreId, getTableNum } from "../utils/tokenUtils";
-import { getTokenRequest } from "../utils/api";
+import { getTokenRequest, postRequest } from "../utils/api";
+import {clearCart} from "../store/cartSlice";
+import {useDispatch, useSelector} from "react-redux";
 
 const Main = ({ navigation }) => {
+  const dispatch = useDispatch()
+
   const [menuData, setMenuData] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [tableNumber, setTableNumber] = useState(null);
   const [storeId, setStoreId] = useState(null);
+  const [isCallEmployeeVisible, setIsCallEmployeeVisible] = useState(false);
+
+  // Redux store에서 장바구니 아이템 가져오기
+  const cartItems = useSelector((state) => state.cart.items);
 
   // 테이블 번호 불러오기
   const fetchTableNumber = async () => {
@@ -46,7 +58,9 @@ const Main = ({ navigation }) => {
   const fetchCategories = async () => {
     if (storeId) {
       try {
-        const resCategories = await getTokenRequest(`/owner/${storeId}/category`);
+        const resCategories = await getTokenRequest(
+          `/owner/${storeId}/category`
+        );
         setCategoryList(resCategories.data);
         console.log("카테고리 조회 결과: ", resCategories.data);
 
@@ -64,14 +78,18 @@ const Main = ({ navigation }) => {
   const fetchMenu = async (categoryId) => {
     if (storeId && categoryId) {
       try {
-        const resMenu = await getTokenRequest(`/owner/${storeId}/category/${categoryId}/menu`);
-        const formattedMenu = resMenu.data.map((item) => ({
-          menuId: item.menuId,
-          menuName: item.menuName,
-          menuImageUrl: item.menuImage,
-          menuPrice: item.price,
-        }));
-        setMenuData(formattedMenu);
+        const resMenu = await getTokenRequest(
+          `/owner/${storeId}/category/${categoryId}/menu`
+        );
+        if (resMenu) {
+          const formattedMenu = resMenu.data.map((item) => ({
+            menuId: item.menuId,
+            menuName: item.menuName,
+            menuImageUrl: item.menuImage,
+            menuPrice: item.price,
+          }));
+          setMenuData(formattedMenu);
+        }
       } catch (error) {
         console.log("메뉴 조회 실패", error);
       }
@@ -92,73 +110,147 @@ const Main = ({ navigation }) => {
     }
   }, [storeId]);
 
-  // `selectedCategory`가 변경될 때마다 해당 카테고리의 메뉴를 불러옴
+  // 선택된 카테고리가 변경될 때마다 해당 카테고리의 메뉴 불러오기
   useEffect(() => {
     if (selectedCategory) {
       fetchMenu(selectedCategory);
     }
   }, [selectedCategory]);
 
+  // 주문 내역 화면으로 이동
+  const handleOrderHistory = () => {
+    navigation.navigate("Payment", { storeId , tableNumber });
+  };
+
+  // 주문하기 버튼 클릭 시 장바구니 전송
+  const handleOrder = async () => {
+    if (cartItems && cartItems.length > 0) {
+      const orderPayload = {
+        tableOrderMenuforRegisters: cartItems.map((item) => {
+          console.log("Item structure:", item);
+          return {
+            menuName: item.menuName,
+            menuCount: item.quantity.toString(),
+          };
+        }),
+      };
+
+      // console.log("주문 내역 (JSON):", JSON.stringify(orderPayload, null, 2));
+
+      try {
+        const response = await postRequest(
+          `/table/${storeId}/order/${tableNumber}`,
+          orderPayload
+        );
+        // console.log("서버 응답:", response);
+        if(response && response.httpStatusCode === 201){
+          Alert.alert("성공적으로 주문이 접수되었습니다.")
+          dispatch(clearCart()) // 주문 성공 시 장바구니 비우기
+        }
+      } catch (err) {
+        console.log("주문 전송 오류:", err);
+      }
+    } else {
+      console.log("장바구니가 비어 있습니다.");
+    }
+  };
+
+  // 주문 호출 모달 오픈
+  const handleStaffCall = () => {
+    setIsCallEmployeeVisible(true);
+  };
+
+  const closeStaffCall = () => {
+    setIsCallEmployeeVisible(false);
+  };
+
   return (
-      <View style={styles.container}>
-        <View style={styles.sideBar}>
-          <TouchableOpacity onPress={() => navigation.navigate("TableNumSetting")}>
-            <View style={styles.tableNum}>
-              <View style={styles.tableNumDark}></View>
-              <Text style={{ fontSize: 20 }}>테이블 번호</Text>
-              <Text style={{ fontSize: 40, fontWeight: "bold" }}>{tableNumber}</Text>
-            </View>
+    <View style={styles.container}>
+      <View style={styles.sideBar}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TableNumSetting")}
+        >
+          <View style={styles.tableNum}>
+            <View style={styles.tableNumDark}></View>
+            <Text style={{ fontSize: 20 }}>테이블 번호</Text>
+            <Text style={{ fontSize: 40, fontWeight: "bold" }}>
+              {tableNumber}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <ScrollView
+          style={{ flex: 1, marginTop: 160 }}
+          contentContainerStyle={styles.categoryContainer}
+        >
+          {categoryList && categoryList.map((category) => (
+            <TouchableOpacity
+              key={category.categoryId}
+              style={[
+                styles.category,
+                selectedCategory === category.categoryId &&
+                  styles.selectedCategory,
+              ]}
+              onPress={() => setSelectedCategory(category.categoryId)}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === category.categoryId &&
+                    styles.selectedCategoryText,
+                ]}
+              >
+                {category.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      <View style={styles.menuContainer}>
+        <Menu items={menuData} />
+      </View>
+
+      <View style={styles.cartContainer}>
+        <Cart />
+      </View>
+
+      <View style={styles.bottomBar}>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={styles.staff}
+            onPress={() => handleStaffCall()}
+          >
+            <Text style={styles.staffText}>🔔 직원 호출</Text>
           </TouchableOpacity>
-          <ScrollView style={{ flex: 1, marginTop: 160 }} contentContainerStyle={styles.categoryContainer}>
-            {categoryList.map((category) => (
-                <TouchableOpacity
-                    key={category.categoryId}
-                    style={[
-                      styles.category,
-                      selectedCategory === category.categoryId && styles.selectedCategory,
-                    ]}
-                    onPress={() => setSelectedCategory(category.categoryId)}
-                >
-                  <Text
-                      style={[
-                        styles.categoryText,
-                        selectedCategory === category.categoryId && styles.selectedCategoryText,
-                      ]}
-                  >
-                    {category.name}
-                  </Text>
-                </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <TouchableOpacity style={styles.payment}>
+            <Text style={styles.bottomBarText}>💰 결제</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.menuContainer}>
-          <Menu items={menuData} />
-        </View>
-
-        <View style={styles.cartContainer}>
-          <Cart />
-        </View>
-
-        <View style={styles.bottomBar}>
-          <View style={styles.row}>
-            <TouchableOpacity style={styles.staff}>
-              <Text style={styles.staffText}>🔔 직원 호출</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.payment}>
-              <Text style={styles.bottomBarText}>💰 결제</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.row}>
-            <TouchableOpacity style={styles.orderHistory}>
-              <Text style={styles.bottomBarText}>🧾 주문 내역</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.order}>
-              <Text style={styles.orderText}>🛒 주문하기</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={styles.orderHistory}
+            onPress={() => handleOrderHistory()}
+          >
+            <Text style={styles.bottomBarText}>🧾 주문 내역</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.order} onPress={() => handleOrder()}>
+            <Text style={styles.orderText}>🛒 주문하기</Text>
+          </TouchableOpacity>
         </View>
       </View>
+
+      <Modal
+        visible={isCallEmployeeVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <CallEmployee
+          tableNumber={tableNumber}
+          storeId={storeId}
+          onClose={() => closeStaffCall()}
+        />
+      </Modal>
+    </View>
   );
 };
 
