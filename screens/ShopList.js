@@ -2,7 +2,7 @@ import React from "react";
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { getTokenRequest } from "../utils/api";
-import {saveStoreId} from "../utils/tokenUtils";
+import {saveStoreId, saveStoreName} from "../utils/tokenUtils";
 
 function ShopList() {
   const navigation = useNavigation();
@@ -27,16 +27,15 @@ function ShopList() {
   }, []);
 
   // 가게 아이디 저장
-    const handleStoreSelect = (storeId) => {
-        try{
-            saveStoreId(storeId)
-                .then((res) => {
-                    navigation.navigate("TableNumSetting");
-                })
-                .catch((err) => {})
+    const handleStoreSelect = async (storeId, storeName) => {
+        try {
+            await saveStoreId(storeId);
+            await saveStoreName(storeName);
+            navigation.navigate("TableNumSetting");
         }
         catch(err){}
     }
+
 
   return (
     <View style={styles.container}>
@@ -48,7 +47,7 @@ function ShopList() {
                     <TouchableOpacity
                         key={storeId}
                         style={styles.listCard}
-                        onPress={() => handleStoreSelect(storeId)}
+                        onPress={() => handleStoreSelect(storeId, storeName)}
                     >
                         <Text style={styles.storeName}> {storeName} </Text>
                         <View style={styles.storeInfoBox}>

@@ -67,6 +67,32 @@ export const getStoreId = async () => {
   }
 };
 
+// 가게 이름 저장
+export const saveStoreName = async (storeName) => {
+  try {
+    await AsyncStorage.setItem("storeName", storeName.toString());
+    console.log(`storeName : ${storeName} 저장 성공`);
+  } catch (err) {
+    console.log("storeName 저장 오류: ", err);
+  }
+};
+
+// 가게 이름 가져오기
+export const getStoreName = async () => {
+  try {
+    const value = await AsyncStorage.getItem("storeName");
+    if (value !== null) {
+      // console.log(`storeName : ${value}`);
+      return value;
+    } else {
+      console.log("가게 이름 존재 X : return null");
+      return null;
+    }
+  } catch (err) {
+    console.log("가게 이름 가져오기 오류 : ", err);
+  }
+};
+
 // 테이블 번호 저장
 export const saveTableNum = async (tableNum) => {
   try {

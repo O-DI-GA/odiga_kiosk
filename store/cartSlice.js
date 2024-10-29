@@ -32,8 +32,11 @@ const cartSlice = createSlice({
                 }
             }
         },
+        clearCart: (state) => {
+            state.items = []; // 장바구니 초기화
+        }
     },
 });
 
-export const { addItemToCart, increaseQuantity, decreaseQuantity } = cartSlice.actions;
+export const { addItemToCart, increaseQuantity, decreaseQuantity,clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
