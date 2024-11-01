@@ -1,135 +1,168 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
   TouchableOpacity,
+  Modal, Alert,
 } from "react-native";
+
 import Menu from "../components/Menu";
 import Cart from "../components/Cart";
+import { CallEmployee } from "../components/CallEmployee";
+
+import { getStoreId, getTableNum } from "../utils/tokenUtils";
+import { getTokenRequest, postRequest } from "../utils/api";
+import {clearCart} from "../store/cartSlice";
+import {useDispatch, useSelector} from "react-redux";
 
 const Main = ({ navigation }) => {
-  const [menuData] = useState([
-    {
-      categoryName: "메인",
-      menuList: [
-        {
-          menuId: 1,
-          menuName: "모둠전",
-          menuImageUrl:
-            "https://mblogthumb-phinf.pstatic.net/MjAyMTAzMzBfMTQz/MDAxNjE3MTAwOTQwMjMy.ArHeejNO2oDXDJlGEbMR0-TXmRyDzzmfQIztuTDkkxAg.-TCpbNBNCpHKMIt6FlBe-iyluIEimOIHA1Fdjs8fmUAg.JPEG.modern-house/20210325%EF%BC%BF222610.jpg?type=w800",
-          menuPrice: 111,
-        },
-        {
-          menuId: 2,
-          menuName: "해물파전",
-          menuImageUrl:
-            "https://mblogthumb-phinf.pstatic.net/MjAyMjA4MTZfMTgy/MDAxNjYwNjQwMTg3NjU3.AXRyV4WVcYDgepRQEDosBTOH5N0jq9XEoC-De0qlMCwg.C8B5JVeu8x-0mUdn8gz-zf1kIrVExZDQjMk9I84ibq8g.JPEG.kimjh4648/_KS_0064.jpg?type=w800",
-          menuPrice: 222,
-        },
-        {
-          menuId: 3,
-          menuName: "육전",
-          menuImageUrl:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOFSpMc_WsNI-oCMwjkXiIbGpywfJv_kxZZA&s",
-          menuPrice: 333,
-        },
-        {
-          menuId: 4,
-          menuName: "김치전",
-          menuImageUrl:
-            "https://i.namu.wiki/i/QhirmuIzH17W2latKFMsNcdimWEn_MofWBpXQBAJ12OjV3Tr0ZTuTnLki0nHtoq9rsCcP8-TyInEwpy6Auebng.webp",
-          menuPrice: 333,
-        },
-        {
-          menuId: 5,
-          menuName: "감자전",
-          menuImageUrl:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnppjuXE17nWy8lOCrxB9zyxvHUT7omBnpkQ&s",
-          menuPrice: 333,
-        },
-        {
-          menuId: 6,
-          menuName: "배추전",
-          menuImageUrl:
-            "https://mblogthumb-phinf.pstatic.net/MjAyNDA2MzBfMjgy/MDAxNzE5NzI1NTAwOTQw.OpHm7YX9tFKBtmU_w3mw3sS5I9leGy6iu8Qf5cmMjCsg.tCc5RXAnoN6cfm6f23-BASMj-9ne7V5odHPsIBzDAuMg.JPEG/20240629_224215.jpg?type=w800",
-          menuPrice: 333,
-        },
-        {
-          menuId: 7,
-          menuName: "부대찌개",
-          menuImageUrl:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTx5SZrHozw3yI7ZaTmyDg5a_KuaGyJao-AIQ&s",
-          menuPrice: 333,
-        },
-        {
-          menuId: 8,
-          menuName: "짬뽕탕",
-          menuImageUrl:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTiqiwePBv6ZbbezBWRUFCAmTrT11SYs_8wQ&s",
-          menuPrice: 333,
-        },
-        {
-          menuId: 9,
-          menuName: "바지락 칼국수",
-          menuImageUrl:
-            "https://thumbnews.nateimg.co.kr/view610///news.nateimg.co.kr/orgImg/kh/2023/01/21/news-p.v1.20230119.d8b6ae19511e4bf0aa9639a4362dbb08_P1.jpg",
-          menuPrice: 333,
-        },
-        {
-          menuId: 10,
-          menuName: "두부 김치",
-          menuImageUrl:
-            "https://img.danawa.com/images/descFiles/6/38/5037428_1_16509621802618894.jpeg",
-          menuPrice: 333,
-        },
-        {
-          menuId: 11,
-          menuName: "무뼈 닭발",
-          menuImageUrl:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqeD50IYCU2zp4y4yWiAELT8q9oNklh3DpQw&s",
-          menuPrice: 333,
-        },
-      ],
-    },
-    {
-      categoryName: "사이드",
-      menuList: [
-        {
-          menuId: 12,
-          menuName: "라면",
-          menuImageUrl:
-            "https://img4.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202403/20/moneytoday/20240320064406240lqcj.jpg",
-          menuPrice: 444,
-        },
-        {
-          menuId: 13,
-          menuName: "콘치즈",
-          menuImageUrl:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRffXfl570V76LKihgKo_HlckmVxE9ErVJBnQ&s",
-          menuPrice: 555,
-        },
-        {
-          menuId: 14,
-          menuName: "파인애플 샤베트",
-          menuImageUrl:
-            "https://img.bizthenaum.co.kr/img2022/pineappesharbet_06.jpg",
-          menuPrice: 666,
-        },
-      ],
-    },
-    {
-      categoryName: "음료",
-      menuList: [],
-    },
-  ]);
+  const dispatch = useDispatch()
 
-  const [selectedCategory, setSelectedCategory] = useState("메인");
+  const [menuData, setMenuData] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [tableNumber, setTableNumber] = useState(null);
+  const [storeId, setStoreId] = useState(null);
+  const [isCallEmployeeVisible, setIsCallEmployeeVisible] = useState(false);
 
-  const selectedMenuList =
-    menuData.find((category) => category.categoryName === selectedCategory)
-      ?.menuList || [];
+  // Redux store에서 장바구니 아이템 가져오기
+  const cartItems = useSelector((state) => state.cart.items);
+
+  // 테이블 번호 불러오기
+  const fetchTableNumber = async () => {
+    try {
+      const response = await getTableNum();
+      if (response) {
+        setTableNumber(response);
+      }
+    } catch (error) {
+      console.log("테이블 번호 불러오기 실패");
+    }
+  };
+
+  // 가게 아이디 불러오기
+  const fetchStoreId = async () => {
+    try {
+      const response = await getStoreId();
+      if (response) {
+        setStoreId(response);
+      }
+    } catch (err) {
+      console.log("가게 아이디 불러오기 실패");
+    }
+  };
+
+  // 카테고리 불러오기 및 첫 번째 카테고리 선택
+  const fetchCategories = async () => {
+    if (storeId) {
+      try {
+        const resCategories = await getTokenRequest(
+          `/owner/${storeId}/category`
+        );
+        setCategoryList(resCategories.data);
+        console.log("카테고리 조회 결과: ", resCategories.data);
+
+        // 첫 번째 카테고리를 기본 선택
+        if (resCategories.data.length > 0) {
+          setSelectedCategory(resCategories.data[0].categoryId);
+        }
+      } catch (error) {
+        console.log("카테고리 조회 실패", error);
+      }
+    }
+  };
+
+  // 선택된 카테고리의 메뉴 불러오기
+  const fetchMenu = async (categoryId) => {
+    if (storeId && categoryId) {
+      try {
+        const resMenu = await getTokenRequest(
+          `/owner/${storeId}/category/${categoryId}/menu`
+        );
+        if (resMenu) {
+          const formattedMenu = resMenu.data.map((item) => ({
+            menuId: item.menuId,
+            menuName: item.menuName,
+            menuImageUrl: item.menuImage,
+            menuPrice: item.price,
+          }));
+          setMenuData(formattedMenu);
+        }
+      } catch (error) {
+        console.log("메뉴 조회 실패", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      await fetchTableNumber();
+      await fetchStoreId();
+    };
+    initialize();
+  }, []);
+
+  useEffect(() => {
+    if (storeId) {
+      fetchCategories();
+    }
+  }, [storeId]);
+
+  // 선택된 카테고리가 변경될 때마다 해당 카테고리의 메뉴 불러오기
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchMenu(selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  // 주문 내역 화면으로 이동
+  const handleOrderHistory = () => {
+    navigation.navigate("Payment", { storeId , tableNumber });
+  };
+
+  // 주문하기 버튼 클릭 시 장바구니 전송
+  const handleOrder = async () => {
+    if (cartItems && cartItems.length > 0) {
+      const orderPayload = {
+        tableOrderMenuforRegisters: cartItems.map((item) => {
+          console.log("Item structure:", item);
+          return {
+            menuName: item.menuName,
+            menuCount: item.quantity.toString(),
+          };
+        }),
+      };
+
+      // console.log("주문 내역 (JSON):", JSON.stringify(orderPayload, null, 2));
+
+      try {
+        const response = await postRequest(
+          `/table/${storeId}/order/${tableNumber}`,
+          orderPayload
+        );
+        // console.log("서버 응답:", response);
+        if(response && response.httpStatusCode === 201){
+          Alert.alert("성공적으로 주문이 접수되었습니다.")
+          dispatch(clearCart()) // 주문 성공 시 장바구니 비우기
+        }
+      } catch (err) {
+        console.log("주문 전송 오류:", err);
+      }
+    } else {
+      console.log("장바구니가 비어 있습니다.");
+    }
+  };
+
+  // 주문 호출 모달 오픈
+  const handleStaffCall = () => {
+    setIsCallEmployeeVisible(true);
+  };
+
+  const closeStaffCall = () => {
+    setIsCallEmployeeVisible(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -140,31 +173,33 @@ const Main = ({ navigation }) => {
           <View style={styles.tableNum}>
             <View style={styles.tableNumDark}></View>
             <Text style={{ fontSize: 20 }}>테이블 번호</Text>
-            <Text style={{ fontSize: 40, fontWeight: "bold" }}>6</Text>
+            <Text style={{ fontSize: 40, fontWeight: "bold" }}>
+              {tableNumber}
+            </Text>
           </View>
         </TouchableOpacity>
         <ScrollView
           style={{ flex: 1, marginTop: 160 }}
           contentContainerStyle={styles.categoryContainer}
         >
-          {menuData.map((category, index) => (
+          {categoryList && categoryList.map((category) => (
             <TouchableOpacity
-              key={index}
+              key={category.categoryId}
               style={[
                 styles.category,
-                selectedCategory === category.categoryName &&
+                selectedCategory === category.categoryId &&
                   styles.selectedCategory,
               ]}
-              onPress={() => setSelectedCategory(category.categoryName)}
+              onPress={() => setSelectedCategory(category.categoryId)}
             >
               <Text
                 style={[
                   styles.categoryText,
-                  selectedCategory === category.categoryName &&
+                  selectedCategory === category.categoryId &&
                     styles.selectedCategoryText,
                 ]}
               >
-                {category.categoryName}
+                {category.name}
               </Text>
             </TouchableOpacity>
           ))}
@@ -172,16 +207,19 @@ const Main = ({ navigation }) => {
       </View>
 
       <View style={styles.menuContainer}>
-        <Menu items={selectedMenuList} />
+        <Menu items={menuData} />
       </View>
 
       <View style={styles.cartContainer}>
-        <Cart/>
+        <Cart />
       </View>
 
       <View style={styles.bottomBar}>
         <View style={styles.row}>
-          <TouchableOpacity style={styles.staff}>
+          <TouchableOpacity
+            style={styles.staff}
+            onPress={() => handleStaffCall()}
+          >
             <Text style={styles.staffText}>🔔 직원 호출</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.payment}>
@@ -189,16 +227,29 @@ const Main = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <TouchableOpacity style={styles.orderHistory}>
+          <TouchableOpacity
+            style={styles.orderHistory}
+            onPress={() => handleOrderHistory()}
+          >
             <Text style={styles.bottomBarText}>🧾 주문 내역</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.order}>
+          <TouchableOpacity style={styles.order} onPress={() => handleOrder()}>
             <Text style={styles.orderText}>🛒 주문하기</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-
+      <Modal
+        visible={isCallEmployeeVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <CallEmployee
+          tableNumber={tableNumber}
+          storeId={storeId}
+          onClose={() => closeStaffCall()}
+        />
+      </Modal>
     </View>
   );
 };
@@ -265,8 +316,8 @@ const styles = StyleSheet.create({
     flex: 4,
     flexWrap: "wrap",
   },
-  cartContainer : {
-    flex : 1.5,
+  cartContainer: {
+    flex: 1.5,
   },
   bottomBar: {
     position: "absolute",

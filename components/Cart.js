@@ -125,11 +125,12 @@ const styles = StyleSheet.create({
   quantityBox: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 40,
+    justifyContent : "space-between",
   },
   itemPrice: {
     fontSize: 16,
     color: "#fff",
+    width : 80
   },
   quantityControls: {
     flexDirection: "row",

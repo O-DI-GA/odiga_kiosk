@@ -21,7 +21,7 @@ export const getTokenFromStorage = async () => {
     const value = await AsyncStorage.getItem("tokens");
     if (value !== null) {
       const tokens = JSON.parse(value);
-      const accessToken = tokens.accessToken;
+      const {accessToken} = tokens;
       return accessToken;
     } else {
       console.log("토큰 존재 X : return null");
@@ -38,5 +38,83 @@ export const removeTokens = async () => {
     await AsyncStorage.removeItem("tokens");
   } catch (err) {
     console.log("토큰 제거 오류 : ", err);
+  }
+};
+
+// 가게 아이디 저장
+export const saveStoreId = async (storeId) => {
+  try {
+    await AsyncStorage.setItem("storeId", storeId.toString());
+    console.log(`StoreId : ${storeId} 저장 성공`);
+  } catch (err) {
+    console.log("StoreId 저장 오류: ", err);
+  }
+};
+
+// 가게 아이디 가져오기
+export const getStoreId = async () => {
+  try {
+    const value = await AsyncStorage.getItem("storeId");
+    if (value !== null) {
+      console.log(`storeId : ${value}`);
+      return parseInt(value);
+    } else {
+      console.log("가게 아이디 존재 X : return null");
+      return null;
+    }
+  } catch (err) {
+    console.log("가게 아이디 가져오기 오류 : ", err);
+  }
+};
+
+// 가게 이름 저장
+export const saveStoreName = async (storeName) => {
+  try {
+    await AsyncStorage.setItem("storeName", storeName.toString());
+    console.log(`storeName : ${storeName} 저장 성공`);
+  } catch (err) {
+    console.log("storeName 저장 오류: ", err);
+  }
+};
+
+// 가게 이름 가져오기
+export const getStoreName = async () => {
+  try {
+    const value = await AsyncStorage.getItem("storeName");
+    if (value !== null) {
+      // console.log(`storeName : ${value}`);
+      return value;
+    } else {
+      console.log("가게 이름 존재 X : return null");
+      return null;
+    }
+  } catch (err) {
+    console.log("가게 이름 가져오기 오류 : ", err);
+  }
+};
+
+// 테이블 번호 저장
+export const saveTableNum = async (tableNum) => {
+  try {
+    await AsyncStorage.setItem("tableNum", tableNum.toString());
+    console.log(`tableNum : ${tableNum} 저장 성공`);
+  } catch (err) {
+    console.log("tableNum 저장 오류: ", err);
+  }
+};
+
+// 테이블 번호 가져오기
+export const getTableNum = async () => {
+  try {
+    const value = await AsyncStorage.getItem("tableNum");
+    if (value !== null) {
+      console.log(`tableNum : ${value}`);
+      return parseInt(value);
+    } else {
+      console.log("테이블 번호 존재 X : return null");
+      return null;
+    }
+  } catch (err) {
+    console.log("테이블 번호 가져오기 오류 : ", err);
   }
 };

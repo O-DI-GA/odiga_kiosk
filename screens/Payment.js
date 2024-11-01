@@ -1,39 +1,59 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { getRequest } from "../utils/api";
+import {getStoreName} from "../utils/tokenUtils";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const Payment = () => {
   const navigation = useNavigation();
-  const [storeId, setStoreId] = useState(1);
+  const route = useRoute();
+
+  const { storeId, tableNumber } = route.params || {}; // storeId, tableNumber 받아오기
+  const [storeName, setStoreName] = useState("");
+
   const [orderId, setOrderId] = useState(0);
-  const [storeName, setStoreName] = useState("닭동가리");
   const [data, setData] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getRequest("api/v1/table/1/order/1");
-        console.log("응답: ", response);
-        console.log("응답.데이터: ", response.data);
-        if (response && response.data) {
-          setOrderId(response.data.tableOrderHistoryId);
-          setData(response.data.tableOrderMenuListDtoList);
-          setTotalPrice(response.data.totalOrderPrice);
-        } else {
-          setData([]);
-        }
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 스토어에 저장된 storeName 불러오기
+  const fetchStoreName = async () => {
+    const receivedStoreName = await getStoreName();
+    if (receivedStoreName) {
+      setStoreName(receivedStoreName);
+    }
+  };
 
-    fetchData();
-  }, []);
+  // 주문내역 불러오기
+  const fetchData = async () => {
+    try {
+      const response = await getRequest(`/table/${storeId}/order/${tableNumber}`);
+      console.log("주문내역 응답: ", response.data.tableOrderMenus);
+      // console.log("응답.데이터: ", response.data);
+      if (response && response.data) {
+        setOrderId(response.data.tableOrderHistoryId);
+        setData(response.data.tableOrderMenus);
+        setTotalPrice(response.data.totalTableOrderPrice);
+      } else {
+        setData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStoreName().then(res => {
+      console.log("주문내역 가게 이름 : ",storeName);
+      console.log("주문내역 가게 아이디 : ",storeId);
+      console.log("주문내역 테이블 아이디 : ",tableNumber);
+    });
+
+    fetchData(); // 주문내역 불러오기
+  }, [storeId, tableNumber, storeName]);
 
   const handlePress = () => {
     const orderDetails = {
@@ -55,6 +75,12 @@ const Payment = () => {
   };
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+      >
+        <Icon name="arrow-back" size={24} color="#000000" />
+      </TouchableOpacity>
       <View style={styles.row}>
         <View style={styles.orderContainer}>
           <Text style={styles.orderText}>주문내역</Text>
@@ -112,6 +138,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#424242",
     alignItems: "center",
     justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 30,
+    padding: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 5,
   },
   row: {
     flexDirection: "row",

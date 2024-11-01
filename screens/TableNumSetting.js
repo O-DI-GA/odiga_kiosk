@@ -2,12 +2,51 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
+import { getTokenRequest } from "../utils/api";
+import { getStoreId, saveTableNum } from "../utils/tokenUtils";
 
 const TableNumSetting = () => {
   const navigation = useNavigation();
 
-  const [tableCount, setTableCount] = useState(20);
+  const [storeId, setStoreId] = useState(null);
+  const [tableCount, setTableCount] = useState(null);
   const [selectedTable, setSelectedTable] = useState("");
+
+  // 테이블 개수 불러오기
+  const fetchTableCount = async () => {
+    try {
+      const response = await getTokenRequest(`/owner/store/${storeId}`);
+      console.log("테이블 개수 API 결과 : ", response.data.tableCount);
+      setTableCount(response.data.tableCount);
+    } catch (err) {
+      console.log("테이블 수 요청 오류");
+    }
+  };
+
+  React.useEffect(() => {
+    try {
+      // 스토어에 저장된 storeId 불러오기
+      const fetchStoreId = async () => {
+        const receivedStoreId = await getStoreId();
+        if (receivedStoreId) {
+          setStoreId(receivedStoreId);
+        }
+      };
+      fetchStoreId().then(() => {
+        fetchTableCount().then((r) => {});
+      });
+    } catch (err) {}
+  }, [storeId]);
+
+  // 테이블번호 설정하기
+  const settingTableNumber = () => {
+    console.log("선택된 테이블 아이디 : ", selectedTable);
+    saveTableNum(selectedTable)
+      .then((res) => {
+        navigation.navigate("Main");
+      })
+      .catch((err) => {});
+  };
 
   return (
     <View style={styles.container}>
@@ -44,7 +83,10 @@ const TableNumSetting = () => {
           >
             <Text style={styles.buttonText}>취소하기</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.submit}>
+          <TouchableOpacity
+            style={styles.submit}
+            onPress={() => settingTableNumber()}
+          >
             <Text style={styles.buttonText}>설정하기</Text>
           </TouchableOpacity>
         </View>
