@@ -126,8 +126,8 @@ const Main = ({ navigation }) => {
   const handleOrder = async () => {
     if (cartItems && cartItems.length > 0) {
       const orderPayload = {
-        tableOrderMenuforRegisters: cartItems.map((item) => {
-          console.log("Item structure:", item);
+        tableOrderMenuforManages: cartItems.map((item) => {
+          // console.log("Item structure:", item);
           return {
             menuName: item.menuName,
             menuCount: item.quantity.toString(),
@@ -142,7 +142,7 @@ const Main = ({ navigation }) => {
           `/table/${storeId}/order/${tableNumber}`,
           orderPayload
         );
-        // console.log("서버 응답:", response);
+        console.log("서버 응답:", response);
         if(response && response.httpStatusCode === 201){
           Alert.alert("성공적으로 주문이 접수되었습니다.")
           dispatch(clearCart()) // 주문 성공 시 장바구니 비우기
