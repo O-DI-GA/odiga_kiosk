@@ -1,78 +1,47 @@
 import React from "react";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import {Alert} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {postRequest} from "../utils/api";
+import { postRequest } from "../utils/api";
 
 export const CallEmployee = ({ tableNumber, storeId, onClose }) => {
-
-    const [orderList] = React.useState([
-        "물", "숟가락", "앞치마", "앞접시" , "휴지", "직원호출", "젓가락", "물티슈"
-    ])
-    const [selectedItems, setSelectedItems] = React.useState([]);
+    const orderList = [
+        "물", "숟가락", "앞치마", "앞접시", "휴지", "직원호출", "젓가락", "물티슈"
+    ];
+    const [selectedItem, setSelectedItem] = React.useState(null);
 
     const handleSelectItem = (item) => {
-        setSelectedItems((prevItems) => {
-            const existingItem = prevItems.find((i) => i.menuName === item);
-            if (existingItem) {
-                // 이미 선택된 항목이 있으면 수량 증가
-                return prevItems.map((i) =>
-                    i.menuName === item ? { ...i, menuCount: i.menuCount + 1 } : i
-                );
-            } else {
-                // 새로 선택된 항목 추가
-                return [...prevItems, { menuName: item, menuCount: 1 }];
-            }
-        });
+        // 이미 선택된 항목을 다시 선택하면 선택 해제
+        // 다른 거 선택하면 그걸로 설정
+        setSelectedItem((prevItem) => (prevItem === item ? null : item));
     };
 
-    const handleIncrease = (item) => {
-        setSelectedItems((prevItems) =>
-            prevItems.map((i) =>
-                i.menuName === item ? { ...i, menuCount: i.menuCount + 1 } : i
-            )
-        );
-    };
-
-    const handleDecrease = (item) => {
-        setSelectedItems((prevItems) => {
-            const updatedItems = prevItems.map((i) =>
-                i.menuName === item ? { ...i, menuCount: i.menuCount - 1 } : i
-            );
-            // 수량이 0인 항목을 필터링하여 제거
-            return updatedItems.filter((i) => i.menuCount > 0);
-        });
-    };
-
-    // TODO : 직원호출 API 수정
     const call = async () => {
-        console.log("직원 호출 목록 : ", selectedItems);
-        /*
-        if (selectedItems && selectedItems.length > 0) {
-            const orderPayload = {
-                tableOrderMenuforRegisters: selectedItems.map((item) => {
-                    console.log("Item structure:", item);
-                    return {
-                        menuName: item.menuName,
-                        menuCount: item.menuCount,
-                    };
-                }),
+        if (selectedItem) {
+            const payload = {
+                callMessage: selectedItem,
+                tableNumber: tableNumber
             };
 
+            console.log("직원 호출 요청: ", payload);
 
             try {
                 const response = await postRequest(
-                    `/table/${storeId}/order/${tableNumber}`,
-                    orderPayload
+                    `/table/${storeId}/order/call`,
+                    payload
                 );
                 console.log("서버 응답:", response);
+                if (response && response.httpStatusCode === 200) {
+                    Alert.alert("성공적으로 요청되었습니다.");
+                    onClose(); // 요청 성공 시 모달 닫기
+                }
             } catch (err) {
-                console.log("주문 전송 오류:", err);
+                console.log("직원 호출 오류:", err);
             }
         } else {
-            console.log("장바구니가 비어 있습니다.");
+            console.log("항목을 선택해 주세요.");
         }
-        */
-    }
+    };
 
     return (
         <View style={styles.modalContainer}>
@@ -88,31 +57,27 @@ export const CallEmployee = ({ tableNumber, storeId, onClose }) => {
                     {orderList.map((item) => (
                         <TouchableOpacity
                             key={item}
-                            style={styles.orderButton}
+                            style={[
+                                styles.orderButton,
+                                selectedItem === item && styles.selectedOrderButton
+                            ]}
                             onPress={() => handleSelectItem(item)}
                         >
-                            <Text style={styles.orderButtonText}>{item}</Text>
+                            <Text
+                                style={[
+                                    styles.orderButtonText,
+                                    selectedItem === item && styles.selectedOrderButtonText
+                                ]}
+                            >
+                                {item}
+                            </Text>
                         </TouchableOpacity>
                     ))}
                 </View>
 
-                <View style={styles.rightBox}>
-                    {selectedItems.map((item) => (
-                        <View key={item.menuName} style={styles.selectedItemRow}>
-                            <Text style={styles.selectedItemText}>{item.menuName}</Text>
-                            <TouchableOpacity onPress={() => handleDecrease(item.menuName)} style={styles.adjustButton}>
-                                <Text style={styles.adjustButtonText}>-</Text>
-                            </TouchableOpacity>
-                            <Text style={styles.quantityText}>{item.menuCount}</Text>
-                            <TouchableOpacity onPress={() => handleIncrease(item.menuName)} style={styles.adjustButton}>
-                                <Text style={styles.adjustButtonText}>+</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
-                    <TouchableOpacity style={styles.callButton} onPress={() => call()}>
-                        <Text style={styles.callButtonText}>요청하기</Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.callButton} onPress={call}>
+                    <Text style={styles.callButtonText}>요청하기</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -157,39 +122,14 @@ const styles = StyleSheet.create({
         width: "40%",
         alignItems: "center",
     },
+    selectedOrderButton: {
+        backgroundColor: "#FF5733",
+    },
     orderButtonText: {
         color: "#333",
     },
-    rightBox: {
-        marginTop: 20,
-    },
-    selectedItemRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 10,
-    },
-    selectedItemText: {
+    selectedOrderButtonText: {
         color: "#fff",
-        fontSize: 16,
-        flex: 1,
-    },
-    adjustButton: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        backgroundColor: "#666",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    adjustButtonText: {
-        color: "#fff",
-        fontSize: 16,
-    },
-    quantityText: {
-        color: "#fff",
-        fontSize: 16,
-        marginHorizontal: 10,
     },
     callButton: {
         backgroundColor: "#FF5733",
