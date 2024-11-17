@@ -5,7 +5,8 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Modal, Alert,
+  Modal,
+  Alert,
 } from "react-native";
 
 import Menu from "../components/Menu";
@@ -14,11 +15,11 @@ import { CallEmployee } from "../components/CallEmployee";
 
 import { getStoreId, getTableNum } from "../utils/tokenUtils";
 import { getTokenRequest, postRequest } from "../utils/api";
-import {clearCart} from "../store/cartSlice";
-import {useDispatch, useSelector} from "react-redux";
+import { clearCart } from "../store/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Main = ({ navigation }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [menuData, setMenuData] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
@@ -119,7 +120,7 @@ const Main = ({ navigation }) => {
 
   // 주문 내역 화면으로 이동
   const handleOrderHistory = () => {
-    navigation.navigate("Payment", { storeId , tableNumber });
+    navigation.navigate("Payment", { storeId, tableNumber });
   };
 
   // 주문하기 버튼 클릭 시 장바구니 전송
@@ -143,9 +144,9 @@ const Main = ({ navigation }) => {
           orderPayload
         );
         console.log("서버 응답:", response);
-        if(response && response.httpStatusCode === 201){
-          Alert.alert("성공적으로 주문이 접수되었습니다.")
-          dispatch(clearCart()) // 주문 성공 시 장바구니 비우기
+        if (response && response.httpStatusCode === 201) {
+          Alert.alert("성공적으로 주문이 접수되었습니다.");
+          dispatch(clearCart()); // 주문 성공 시 장바구니 비우기
         }
       } catch (err) {
         console.log("주문 전송 오류:", err);
@@ -182,27 +183,28 @@ const Main = ({ navigation }) => {
           style={{ flex: 1, marginTop: 160 }}
           contentContainerStyle={styles.categoryContainer}
         >
-          {categoryList && categoryList.map((category) => (
-            <TouchableOpacity
-              key={category.categoryId}
-              style={[
-                styles.category,
-                selectedCategory === category.categoryId &&
-                  styles.selectedCategory,
-              ]}
-              onPress={() => setSelectedCategory(category.categoryId)}
-            >
-              <Text
+          {categoryList &&
+            categoryList.map((category) => (
+              <TouchableOpacity
+                key={category.categoryId}
                 style={[
-                  styles.categoryText,
+                  styles.category,
                   selectedCategory === category.categoryId &&
-                    styles.selectedCategoryText,
+                    styles.selectedCategory,
                 ]}
+                onPress={() => setSelectedCategory(category.categoryId)}
               >
-                {category.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedCategory === category.categoryId &&
+                      styles.selectedCategoryText,
+                  ]}
+                >
+                  {category.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
         </ScrollView>
       </View>
 
@@ -215,17 +217,12 @@ const Main = ({ navigation }) => {
       </View>
 
       <View style={styles.bottomBar}>
-        <View style={styles.row}>
-          <TouchableOpacity
-            style={styles.staff}
-            onPress={() => handleStaffCall()}
-          >
-            <Text style={styles.staffText}>🔔 직원 호출</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.payment}>
-            <Text style={styles.bottomBarText}>💰 결제</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.staff}
+          onPress={() => handleStaffCall()}
+        >
+          <Text style={styles.staffText}>🔔 직원 호출</Text>
+        </TouchableOpacity>
         <View style={styles.row}>
           <TouchableOpacity
             style={styles.orderHistory}
