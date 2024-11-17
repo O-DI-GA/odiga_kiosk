@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getRequest } from "../utils/api";
-import {getStoreName} from "../utils/tokenUtils";
+import { getStoreName } from "../utils/tokenUtils";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const Payment = () => {
@@ -28,28 +28,32 @@ const Payment = () => {
   // 주문내역 불러오기
   const fetchData = async () => {
     try {
-      const response = await getRequest(`/table/${storeId}/order/${tableNumber}`);
-      console.log("주문내역 응답: ", response.data.tableOrderMenus);
-      // console.log("응답.데이터: ", response.data);
+      const response = await getRequest(
+        `/table/${storeId}/order/${tableNumber}`
+      );
+
       if (response && response.data) {
-        setOrderId(response.data.tableOrderHistoryId);
-        setData(response.data.tableOrderMenus);
-        setTotalPrice(response.data.totalTableOrderPrice);
+        setOrderId(response.data.tableOrderHistoryId || 0);
+        setData(response.data.tableOrderMenus || []);
+        setTotalPrice(response.data.totalTableOrderPrice || 0);
       } else {
         setData([]);
+        setTotalPrice(0);
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
+      setData([]);
+      setTotalPrice(0);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStoreName().then(res => {
-      console.log("주문내역 가게 이름 : ",storeName);
-      console.log("주문내역 가게 아이디 : ",storeId);
-      console.log("주문내역 테이블 아이디 : ",tableNumber);
+    fetchStoreName().then((res) => {
+      console.log("주문내역 가게 이름 : ", storeName);
+      console.log("주문내역 가게 아이디 : ", storeId);
+      console.log("주문내역 테이블 아이디 : ", tableNumber);
     });
 
     fetchData(); // 주문내역 불러오기
@@ -76,8 +80,8 @@ const Payment = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
       >
         <Icon name="arrow-back" size={24} color="#000000" />
       </TouchableOpacity>
@@ -93,20 +97,33 @@ const Payment = () => {
               <Text style={[styles.menuText, styles.menuItemPrice]}>가격</Text>
             </View>
 
-            {data.map((item, index) => (
-              <View key={index} style={styles.menuItem}>
-                <Text style={[styles.menuText, styles.menuItemName]}>
-                  {item.menuName}
-                </Text>
-                <Text style={[styles.menuText, styles.menuItemQuantity]}>
-                  {item.menuCount}
-                </Text>
-                <Text style={[styles.menuText, styles.menuItemPrice]}>
-                  {item.menuTotalPrice.toLocaleString()}
-                </Text>
-              </View>
-            ))}
+            {data.length > 0 ? (
+              data.map((item, index) => (
+                <View key={index} style={styles.menuItem}>
+                  <Text style={[styles.menuText, styles.menuItemName]}>
+                    {item.menuName}
+                  </Text>
+                  <Text style={[styles.menuText, styles.menuItemQuantity]}>
+                    {item.menuCount}
+                  </Text>
+                  <Text style={[styles.menuText, styles.menuItemPrice]}>
+                    {item.menuTotalPrice.toLocaleString()}
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: 20,
+                  color: "gray",
+                }}
+              >
+                주문 내역이 없습니다.
+              </Text>
+            )}
           </View>
+
           <View style={styles.total}>
             <Text style={styles.totalText}>합계</Text>
             <Text style={styles.totalText}>
